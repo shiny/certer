@@ -1,0 +1,11 @@
+version: "3"
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: faster-now-alpine-pitiful
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
