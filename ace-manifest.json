@@ -62,6 +62,55 @@
       "aliases": [],
       "flags": []
     },
+    "dns:cred": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/DnsCred",
+      "commandName": "dns:cred",
+      "description": "Create/Update/Delete a dns credential",
+      "args": [],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "provider",
+          "propertyName": "provider",
+          "type": "string",
+          "description": "Dns Provider, i.e. aliyun"
+        },
+        {
+          "name": "list",
+          "propertyName": "list",
+          "type": "boolean",
+          "description": "List supportted dns providers"
+        },
+        {
+          "name": "delete",
+          "propertyName": "delete",
+          "type": "boolean",
+          "description": "Delete credential by --cred [credential name]"
+        },
+        {
+          "name": "cred",
+          "propertyName": "cred",
+          "type": "string",
+          "description": "Credential name"
+        }
+      ]
+    },
+    "dns:set": {
+      "settings": {
+        "loadApp": false,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/DnsSet",
+      "commandName": "dns:set",
+      "description": "Set dns record for certification orders",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "order:create": {
       "settings": {
         "loadApp": true,

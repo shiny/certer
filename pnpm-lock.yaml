@@ -13,6 +13,7 @@ specifiers:
   '@japa/preset-adonis': ^1.2.0
   '@japa/runner': ^2.2.2
   '@symfony/webpack-encore': 4.1.1
+  '@types/node-fetch': ^2.6.2
   '@types/proxy-addr': ^2.0.0
   '@types/source-map-support': ^0.5.6
   adonis-preset-ts: ^2.1.0
@@ -22,12 +23,14 @@ specifiers:
   eslint-plugin-prettier: ^4.2.1
   handyacme: ^0.1.0
   luxon: ^3.1.1
+  node-fetch: '2'
   pg: ^8.8.0
   pino-pretty: ^9.1.1
   prettier: ^2.8.0
   proxy-addr: ^2.0.7
   reflect-metadata: ^0.1.13
   source-map-support: ^0.5.21
+  tldts: ^5.7.102
   typescript: ~4.6
   webpack: ^5.72
   webpack-cli: ^4.9.1
@@ -43,10 +46,12 @@ dependencies:
   '@adonisjs/view': 6.2.0_@adonisjs+core@5.9.0
   handyacme: 0.1.0
   luxon: 3.1.1
+  node-fetch: 2.6.7
   pg: 8.8.0
   proxy-addr: 2.0.7
   reflect-metadata: 0.1.13
   source-map-support: 0.5.21
+  tldts: 5.7.102
 
 devDependencies:
   '@adonisjs/assembler': 5.9.5_@adonisjs+core@5.9.0
@@ -55,6 +60,7 @@ devDependencies:
   '@japa/preset-adonis': 1.2.0_psmfw5uj26lvxnodlskuo2aapm
   '@japa/runner': 2.2.2
   '@symfony/webpack-encore': 4.1.1_cz7tvpyi2adzixd5yzf3ry4f5m
+  '@types/node-fetch': 2.6.2
   '@types/proxy-addr': 2.0.0
   '@types/source-map-support': 0.5.6
   adonis-preset-ts: 2.1.0
@@ -2439,6 +2445,13 @@ packages:
 
   /@types/minimatch/5.1.2:
     resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
+    dev: true
+
+  /@types/node-fetch/2.6.2:
+    resolution: {integrity: sha512-DHqhlq5jeESLy19TYhLakJ07kNumXWjcDdxXsLUMJZ6ue8VZJj4kLPQVE/2mdHh3xZziNF1xppu5lwmS53HR+A==}
+    dependencies:
+      '@types/node': 18.11.10
+      form-data: 3.0.1
     dev: true
 
   /@types/node/18.11.10:
@@ -4884,6 +4897,15 @@ packages:
   /for-in/1.0.2:
     resolution: {integrity: sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /form-data/3.0.1:
+    resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
     dev: true
 
   /form-data/4.0.0:
@@ -8262,6 +8284,17 @@ packages:
     dependencies:
       convert-hrtime: 3.0.0
     dev: true
+
+  /tldts-core/5.7.102:
+    resolution: {integrity: sha512-EFhrqqb0abo/9KZ4ZxHSF4e8CYKk/SouOLbNUMZUw+5OjC0hUJbFmHXtHNWYGaqnmwjnvdwFQ1a29Tflpz5Ufg==}
+    dev: false
+
+  /tldts/5.7.102:
+    resolution: {integrity: sha512-FvqzkTsADAntBc4EPmcmIs4GkjBBtDKZKHJJU6i1TzL9d+ijBearWEgGNoE8YO9T8pEe+szYE+KFMmh6ixexYA==}
+    hasBin: true
+    dependencies:
+      tldts-core: 5.7.102
+    dev: false
 
   /tmp-cache/1.1.0:
     resolution: {integrity: sha512-j040fkL/x+XAZQ9K3bKGEPwgYhOZNBQLa3NXEADUiuno9C+3N2JJA4bVPDREixp604G3/vTXWA3DIPpA9lu1RQ==}

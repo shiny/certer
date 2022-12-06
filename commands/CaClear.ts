@@ -35,7 +35,7 @@ export default class CaClear extends BaseCommand {
 
   public async run() {
     if (!this.confirm) {
-      return this.logger.info('use --confirm to continue')
+      return this.logger.info(`use flag ${this.colors.red('--confirm')} to continue`)
     }
     const { default: CertAuthority } = await import("App/Models/CertAuthority")
     await CertAuthority.truncate()
