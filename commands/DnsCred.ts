@@ -28,7 +28,7 @@ export default class DnsCred extends BaseCommand {
   }
 
   @flags.string({
-    description: 'Dns Provider, i.e. aliyun',
+    description: 'Dns Provider, e.g. aliyun',
   })
   public provider: string
 
