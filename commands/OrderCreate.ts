@@ -3,6 +3,7 @@ import {
   flags,
   args
 } from '@adonisjs/core/build/standalone'
+
 import acme from "handyacme"
 
 import { getAuthorityName, AvailableCaAlias, AvailableEnv } from "./"
@@ -18,23 +19,33 @@ export default class OrderCreate extends BaseCommand {
   /**
    * Command description is displayed in the "help" output
    */
-  public static description = 'create certification order'
+  public static description = 'Create certification order'
 
-  @args.spread()
+  @args.spread({
+    description: 'domains, e.g. --domains *.example.com www.example.com'
+  })
   public domains: string[]
 
   @flags.string({ description: "order's account email"})
   public email: string
 
   @flags.string({
-    description: "options: letsencrypt | le | zerossl | zs | buypass | bp"
+    description: "options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
   })
   public ca: AvailableCaAlias
 
   @flags.string({
-    description: "options: staging | production",
+    description: "options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
   })
   public env: AvailableEnv
+
+  get isDefaultEnv() {
+    return this.env === defaultEnv
+  }
+
+  get isDefaultCa() {
+    return this.ca === defaultCa
+  }
 
   public static settings = {
     /**
@@ -52,6 +63,10 @@ export default class OrderCreate extends BaseCommand {
     stayAlive: false,
   }
 
+  public showCreateAccountTips() {
+    this.logger.info(`Run ${this.colors.green("node ace account:create")} to create the account first`)
+  }
+
   public async run() {
 
     const { default: Account } = await import('App/Models/Account')
@@ -67,19 +82,62 @@ export default class OrderCreate extends BaseCommand {
       type: authorityEnv
     })
     if (!user) {
-      this.logger.info(`Run ${this.colors.green("node ace account:create")} to create the account first`)
+      this.showCreateAccountTips()
       this.logger.error(`User not exists: ${email} in ${authorityName} ${authorityEnv} mode`)
       return
     }
 
+    const { default: CertOrder } = await import("App/Models/CertOrder")
+    const isExists = await CertOrder.isExists({
+      ca: authorityName,
+      type: authorityEnv,
+      email: email,
+      name: this.domains[0]
+    })
+    if (isExists) {
+      return this.logger.error('Order with same ca/env/email/name already exists, please continue the previous order')
+    }
+
+    this.logger.logUpdate(`[1/5] Creating ACME client...`)
     const client = await acme.create(authorityName, authorityEnv)
+
+    this.logger.logUpdate(`[2/5] Importing account ${user.email}...`)
     await client.importAccount({
       email: user.email,
       accountUrl: user.account_url,
       jwk: user.jwk
     })
+
+    this.logger.logUpdate('[3/5] Creating order...')
     const order = await client.createOrder(this.domains)
-    console.log(order)
+
+    this.logger.logUpdate('[4/5] Creating authorizations...')
+    const authorizations = await order.authorizations()
+
+    this.logger.logUpdate('[5/5] Saving...')
+    await CertOrder.createCertOrder({
+      order,
+      account: client.account,
+      authorizations
+    })
+
+    this.logger.logUpdatePersist()
     this.logger.info('Order created')
+    this.logger.info(`Next command: ${this.dnsSetCommand(this.domains[0])}`)
+  }
+
+  public dnsSetCommand(firstDomainName: string){
+    const commands: string[] = []
+    commands.push(`--domain ${firstDomainName}`)
+    if (this.ca) {
+      commands.push(`--ca ${this.ca}`)
+    }
+    if (this.env) {
+      commands.push(`--env ${this.env}`)
+    }
+    if (this.email) {
+      commands.push(`--email ${this.email}`)
+    }
+    return this.colors.green('node ace dns:set ' + commands.join(' '))
   }
 }
