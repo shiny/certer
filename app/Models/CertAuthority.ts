@@ -12,25 +12,25 @@ export default class CertAuthority extends BaseModel {
   public type: "staging" | "production"
 
   @column()
-  public directory_url: string
+  public directoryUrl: string
 
   @column()
-  public new_nonce: string
+  public newNonce: string
   
   @column()
-  public new_account: string
+  public newAccount: string
   
   @column()
-  public new_order: string
+  public newOrder: string
   
   @column()
-  public revoke_cert: string
+  public revokeCert: string
   
   @column()
-  public key_change: string
+  public keyChange: string
   
   @column()
-  public external_account_required: boolean
+  public externalAccountRequired: boolean
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

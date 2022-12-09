@@ -49,13 +49,13 @@ export default class CaDiscover extends BaseCommand {
         await CertAuthority.create({
           ca,
           type,
-          directory_url: authority.directory.directoryUrl,
-          new_nonce: authority.directory.newNonce,
-          new_account: authority.directory.newAccount,
-          new_order: authority.directory.newOrder,
-          revoke_cert: authority.directory.revokeCert,
-          key_change: authority.directory.keyChange,
-          external_account_required: authority.directory.meta.externalAccountRequired
+          directoryUrl: authority.directory.directoryUrl,
+          newNonce: authority.directory.newNonce,
+          newAccount: authority.directory.newAccount,
+          newOrder: authority.directory.newOrder,
+          revokeCert: authority.directory.revokeCert,
+          keyChange: authority.directory.keyChange,
+          externalAccountRequired: authority.directory.meta.externalAccountRequired
         })
         this.logger.info(`${ca} ${type}: ${authority.directory.directoryUrl}`)
       }

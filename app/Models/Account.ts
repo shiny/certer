@@ -20,7 +20,7 @@ export default class Account extends BaseModel {
   public jwk: string
 
   @column()
-  public account_url: string
+  public accountUrl: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

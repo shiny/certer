@@ -93,7 +93,7 @@ export default class OrderCreate extends BaseCommand {
     this.logger.logUpdate(`[2/5] Importing account ${user.email}...`)
     await client.importAccount({
       email: user.email,
-      accountUrl: user.account_url,
+      accountUrl: user.accountUrl,
       jwk: user.jwk
     })
 

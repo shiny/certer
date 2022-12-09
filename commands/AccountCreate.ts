@@ -76,7 +76,7 @@ export default class AccountCreate extends BaseCommand {
     const accountInfo = {
       jwk: await ca.account.exportPrivateJwk(),
       email: ca.account.email,
-      account_url: ca.account.accountUrl,
+      accountUrl: ca.account.accountUrl,
       ca: this.authorityName,
       type: this.authorityEnv
     }
