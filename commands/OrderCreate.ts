@@ -48,18 +48,7 @@ export default class OrderCreate extends BaseCommand {
   }
 
   public static settings = {
-    /**
-     * Set the following value to true, if you want to load the application
-     * before running the command. Don't forget to call `node ace generate:manifest` 
-     * afterwards.
-     */
     loadApp: true,
-
-    /**
-     * Set the following value to true, if you want this command to keep running until
-     * you manually decide to exit the process. Don't forget to call 
-     * `node ace generate:manifest` afterwards.
-     */
     stayAlive: false,
   }
 
@@ -123,12 +112,22 @@ export default class OrderCreate extends BaseCommand {
 
     this.logger.logUpdatePersist()
     this.logger.info('Order created')
-    this.logger.info(`Next command: ${this.dnsSetCommand(this.domains[0])}`)
+    this.logger.info(`Next command: ${await this.dnsSetCommand(this.domains[0])}`)
   }
 
-  public dnsSetCommand(firstDomainName: string){
-    const commands: string[] = []
-    commands.push(`--domain ${firstDomainName}`)
+  public async dnsSetCommand(firstDomainName: string){
+    
+    const commands: string[] = [
+      'node ace dns:set'
+    ]
+    commands.push(`${firstDomainName}`)
+
+    const { default: DnsCred } = await import("App/Models/DnsCred")
+    const hasDefaultCred = await DnsCred.hasDefaultCred()
+    if (!hasDefaultCred) {
+      commands.push(`--cred [Your cred name]`)
+    }
+
     if (this.ca) {
       commands.push(`--ca ${this.ca}`)
     }
@@ -138,6 +137,6 @@ export default class OrderCreate extends BaseCommand {
     if (this.email) {
       commands.push(`--email ${this.email}`)
     }
-    return this.colors.green('node ace dns:set ' + commands.join(' '))
+    return this.colors.green(commands.join(' '))
   }
 }
