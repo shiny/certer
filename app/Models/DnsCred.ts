@@ -29,4 +29,10 @@ export default class DnsCred extends BaseModel {
     const results = await DnsCred.query().count('* as total')
     return results[0].$extras.total === '1'
   }
+
+  public static async getDefaultCred() {
+    if (await DnsCred.hasDefaultCred()) {
+      return DnsCred.firstOrFail()
+    }
+  }
 }
