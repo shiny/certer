@@ -19,4 +19,14 @@ export default class DnsCred extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  /**
+   * When there is only one cred
+   * make it the default
+   * @returns 
+   */
+  public static async hasDefaultCred() {
+    const results = await DnsCred.query().count('* as total')
+    return results[0].$extras.total === '1'
+  }
 }

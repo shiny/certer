@@ -60,6 +60,11 @@ export default class CertOrder extends BaseModel {
   public updatedAt: DateTime
 
   public static async isExists({ ca, type, name, email }) {
+    const existsOrder = await CertOrder.findExistingOne({ ca, type, name, email })
+    return !!existsOrder
+  }
+
+  public static async findExistingOne({ ca, type, name, email }) {
     const records = await CertOrder.query()
       .where('ca', ca)
       .where('type', type)
@@ -71,7 +76,7 @@ export default class CertOrder extends BaseModel {
         "processing",
         "valid",
       ])
-    return Array.isArray(records) && records.length > 0
+    return records?.[0]
   }
 
   public static async createCertOrder({ order, account, authorizations }: OrderCreateOptions) {
