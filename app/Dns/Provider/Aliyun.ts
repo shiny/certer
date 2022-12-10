@@ -3,6 +3,8 @@ import querystring from "node:querystring"
 import { BaseCommand } from '@adonisjs/core/build/standalone'
 import BaseProvider from './BaseProvider'
 import { RequestInit } from "node-fetch"
+import { parse } from "tldts"
+import { RecordOption, isRecordType } from ".."
 
 function nonce() {
     return crypto.randomBytes(5).toString('hex')
@@ -13,6 +15,20 @@ function createTimestamp() {
     // remove milliseconds part `.514`
     const date = (new Date()).toISOString()
     return date.replace(/\.[0-9]{3}/, '')
+}
+
+type AliyunDnsRecord = {
+    Status: "Enable" | "Disable",
+    Type: string
+    Weight: number
+    Value: string
+    TTL: number
+    Line: string
+    RecordId: string
+    Priority: number
+    RR: string
+    DomainName: string
+    Locked: boolean
 }
 
 /**
@@ -35,10 +51,6 @@ function sign(method: 'GET' | 'POST', url: URL, secret: string) {
         .digest('base64')
 }
 
-function createPostSignature(url: URL, secret) {
-    return sign('POST', url, secret)
-}
-
 function createGetSignature(url: URL, secret) {
     url.searchParams
     url.pathname
@@ -54,12 +66,20 @@ type AliyunConfig = {
 class Aliyun extends BaseProvider {
 
     private endpoint = 'https://alidns.aliyuncs.com'
+    public name: string
     private accessKeyId: string
     private accessKeySecret: string
     public apiVersion = '2015-01-09'
 
     constructor(config?: any) {
         super()
+        this.useCred(config)
+    }
+
+    useCred(config?: AliyunConfig) {
+        if (config?.name) {
+            this.name = config?.name
+        }
         if (config?.accessKeyId) {
             this.accessKeyId = config.accessKeyId
         }
@@ -67,6 +87,7 @@ class Aliyun extends BaseProvider {
             this.accessKeySecret = config.accessKeySecret
         }
     }
+
     /**
      * input cred in cli mode
      */
@@ -97,14 +118,13 @@ class Aliyun extends BaseProvider {
     }
 
     /**
-     * test the inputted credentials
+     * test the credentials
      * throw Error on failed
      * @param config 
      */
-    async testCred(config: AliyunConfig) {
-        this.accessKeyId = config.accessKeyId
-        this.accessKeySecret = config.accessKeySecret
-        const res = await this.action({
+    async testCred(config?: AliyunConfig) {
+        const instance = config ? new Aliyun(config) : this
+        const res = await instance.action({
             Action: 'DescribeDomains',
         })
         const result = await res.json()
@@ -128,15 +148,73 @@ class Aliyun extends BaseProvider {
         const url = new URL(this.endpoint + '/?' + query)
         url.searchParams.delete('Signature')
         url.searchParams.append('Signature', createGetSignature(url, this.accessKeySecret))
-        return this.fetch(url, fetchOptions)
+        const res = await this.fetch(url, fetchOptions)
+        const result = await res.json()
+        if (res.status !== 200) {
+            const err = new Error(`${result.Message}`)
+            err.name = result.Code
+            throw err
+        }
+        return result
     }
 
-    async query(domain) {
+    async query(hostname: string) {
+        const domain = parse(hostname).domain
         return this.action({
             Action: "DescribeSubDomainRecords",
             DomainName: domain,
-            SubDomain: "_acme-challenge.test1.keqin.tech",
+            SubDomain: hostname,
             Type: 'TXT',
+        })
+    }
+
+    async setRecord({ domain, subdomain, value, type }) {
+        await this.action({
+            Action: 'AddDomainRecord',
+            DomainName: domain,
+            RR: subdomain,
+            Value: value,
+            Type: type
+        })
+    }
+
+    async deleteById(rawId: string) {
+        return this.action({
+            Action: 'DeleteDomainRecord',
+            RecordId: rawId
+        })
+    }
+
+    async listSubdomainRecords({ domain, subdomain, type }): Promise<RecordOption[]> {
+
+        const buildQueryDomain = (domain, subdomain) => {
+            if (subdomain === '@') {
+                return domain
+            } else {
+                return `${subdomain}.${domain}`
+            }
+        }
+
+        const result = await this.action({
+            Action: 'DescribeSubDomainRecords',
+            SubDomain: buildQueryDomain(domain, subdomain),
+            Type: type,
+            DomainName: domain,
+            PageSize: 500
+        })
+        if (!result?.DomainRecords?.Record) {
+            return []
+        }
+        return (result.DomainRecords.Record as AliyunDnsRecord[]).map(record => {
+            const type = isRecordType(record.Type) ? record.Type : 'UNKNOWN' 
+            return {
+                domain,
+                subdomain: record.RR,
+                value: record.Value,
+                type,
+                TTL: record.TTL,
+                rawId: record.RecordId
+            }
         })
     }
 }
