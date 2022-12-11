@@ -157,10 +157,11 @@ export default class CertOrder extends BaseModel {
   }
 
   /**
+   * Load & save order's data
    * 
    * @param acmeClient 
    * @param seconds 
-   * @returns boolean
+   * @returns boolean return true on ready, false on pending/processing
    */
   async waitForStatusReadyAndSave(acmeClient: Ca, seconds: number = 1) {
     const order = await acmeClient.restoreOrder(this.orderUrl)
@@ -183,6 +184,12 @@ export default class CertOrder extends BaseModel {
     throw new Error(`Order status is ${order.status}`)
   }
 
+  /**
+   * wait for all challenges
+   * @param acmeClient 
+   * @param seconds 
+   * @returns true on challenges are ready all, false on not.
+   */
   async waitForChallengesReady(acmeClient: Ca, seconds: number = 1) {
     const readyStates = await Promise.all(this.challenges.map(challenge => {
       return challenge.isValidAndSave(acmeClient)
