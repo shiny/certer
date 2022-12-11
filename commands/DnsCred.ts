@@ -40,7 +40,7 @@ export default class DnsCred extends BaseCommand {
   @flags.boolean({
     description: "Delete credential by --cred [credential name]"
   })
-  public delete: boolean
+  public rm: boolean
 
   @flags.string({
     description: 'Credential name'
@@ -91,7 +91,7 @@ export default class DnsCred extends BaseCommand {
       return this.showProviders()
     }
 
-    if (this.delete) {
+    if (this.rm) {
       return await this.onDelete()
     }
 

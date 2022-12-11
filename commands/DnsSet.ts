@@ -35,7 +35,7 @@ export default class DnsSet extends BaseCommand {
   @flags.boolean({
     description: "Delete the added txt record on _acme-challenge.hostname"
   })
-  public delete: boolean
+  public rm: boolean
 
   public async run() {
     const { default: CertOrder } = await import('App/Models/CertOrder')
@@ -75,7 +75,7 @@ export default class DnsSet extends BaseCommand {
       const hostname = `_acme-challenge.${challenge.identifierValue}`
       const isExist = await dns.doesTxtRecordExist(hostname, challenge.signKey)
       // should delete
-      if (this.delete) {
+      if (this.rm) {
         if (!isExist) {
           return this.logger.action('delete').skipped(`${this.colors.green(hostname)} did not exist`)
         }
