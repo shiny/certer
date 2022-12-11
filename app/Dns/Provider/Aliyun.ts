@@ -124,12 +124,11 @@ class Aliyun extends BaseProvider {
      */
     async testCred(config?: AliyunConfig) {
         const instance = config ? new Aliyun(config) : this
-        const res = await instance.action({
+        const { Code, Message } = await instance.action({
             Action: 'DescribeDomains',
         })
-        const result = await res.json()
-        if (result.Code && result.Message) {
-            throw new Error(result.Message)
+        if (Code && Message) {
+            throw new Error(Message)
         }
     }
 
