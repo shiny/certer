@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import type { Ca } from 'handyacme'
 
 export default class Account extends BaseModel {
   @column({ isPrimary: true })
@@ -41,5 +42,13 @@ export default class Account extends BaseModel {
       .where("ca", ca)
       .where("type", type)
       .first()
+  }
+
+  async loadIntoAcmeClient(acmeClient: Ca) {
+    return acmeClient.importAccount({
+      email: this.email,
+      accountUrl: this.accountUrl,
+      jwk: this.jwk
+    })
   }
 }
