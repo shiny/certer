@@ -78,32 +78,39 @@ export default class OrderFinish extends BaseCommand {
     const waitSeconds = 1
     let retry = 0
     while(!await order.waitForChallengesReady(acmeClient, waitSeconds)) {
-      this.logger.logUpdate(`trying ${retry}...`)
+      retry++
+      this.logger.logUpdate(`retrying challenge(${retry})...`)
     }
     this.logger.logUpdatePersist()
     this.logger.action('Authorization').succeeded('passed')
 
-    const { default: Cert } = await import("App/Models/Cert") 
+    const { default: Cert } = await import("App/Models/Cert")
+    retry = 0
     do {
       try {
         await order.waitForStatusReadyAndSave(acmeClient, waitSeconds)
+        retry++
       } catch (err) {
         this.logger.action('finish').failed('Order is invalid', 'you should recreate an order')
         break
       }
+      // finalize order when ready
       if (order.isReady) {
         const cert = await Cert.createFromOrder(order)
         const { certificate: certificateUrl } = await cert.finalize(acmeClient)
         order.certificateUrl = certificateUrl
+        await order.save()
         await cert.save()
-        continue
-      } else if(order.isValid) {
+        this.logger.action('finalize').succeeded('succeed')
+      // download order when valid
+      } else if (order.isValid) {
         const cert = await Cert.findByOrFail('certOrderId', order.id)
-        await cert.download(acmeClient)
-        await cert.save()
+        await cert.downloadSave(acmeClient)
+        this.logger.action('download').succeeded('succeed')
         break
-      } else if(order.isPending || order.isProcessing) {
-        continue
+      // wait for pending or processing
+      } else if (order.isPending || order.isProcessing) {
+        this.logger.logUpdate(`retrying load order(${retry})...`)
       } else {
         throw new Error(`Unexpect order status ${order.status}`)
       }
