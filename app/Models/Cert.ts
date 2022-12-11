@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import CertOrder from './CertOrder'
 import { Order, Ca, createEcdsaCsr } from 'handyacme'
 type Alg = "ECDSA" | "RSA"
@@ -52,6 +52,12 @@ export default class Cert extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
 
+  @hasOne(() => CertOrder, {
+    localKey: 'certOrderId',
+    foreignKey: 'id'
+  })
+  public order: HasOne<typeof CertOrder>
+
   public static async createFromOrder(order: CertOrder) {
     const cert = new Cert
     const { privateKey, csr } = await createEcdsaCsr(order.domains, "pem")
@@ -81,5 +87,10 @@ export default class Cert extends BaseModel {
     const acmeOrder = new Order(acmeClient)
     const certContent = await acmeOrder.downloadCertification(order.certificateUrl)
     this.cert = certContent
+  }
+
+  async downloadSave(acmeClient: Ca) {
+    await this.download(acmeClient)
+    return this.save()
   }
 }
