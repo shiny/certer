@@ -42,8 +42,8 @@
       "aliases": [],
       "flags": [
         {
-          "name": "confirm",
-          "propertyName": "confirm",
+          "name": "yes",
+          "propertyName": "yes",
           "type": "boolean",
           "alias": "y",
           "description": "confirm to clear the table cert_authorities"
@@ -77,7 +77,7 @@
           "name": "provider",
           "propertyName": "provider",
           "type": "string",
-          "description": "Dns Provider, i.e. aliyun"
+          "description": "Dns Provider, e.g. aliyun"
         },
         {
           "name": "list",
@@ -86,8 +86,8 @@
           "description": "List supportted dns providers"
         },
         {
-          "name": "delete",
-          "propertyName": "delete",
+          "name": "rm",
+          "propertyName": "rm",
           "type": "boolean",
           "description": "Delete credential by --cred [credential name]"
         },
@@ -101,15 +101,96 @@
     },
     "dns:set": {
       "settings": {
-        "loadApp": false,
+        "loadApp": true,
         "stayAlive": false
       },
       "commandPath": "./commands/DnsSet",
       "commandName": "dns:set",
       "description": "Set dns record for certification orders",
-      "args": [],
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": true
+        }
+      ],
       "aliases": [],
-      "flags": []
+      "flags": [
+        {
+          "name": "cred",
+          "propertyName": "cred",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "Order's account email"
+        },
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "Options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "Options: staging | production"
+        },
+        {
+          "name": "rm",
+          "propertyName": "rm",
+          "type": "boolean",
+          "description": "Delete the added txt record on _acme-challenge.hostname"
+        }
+      ]
+    },
+    "dns:verify": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/DnsVerify",
+      "commandName": "dns:verify",
+      "description": "Verify dns challenge",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": true
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "Order's account email"
+        },
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "Options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "Options: staging | production"
+        },
+        {
+          "name": "nameserver",
+          "propertyName": "nameserver",
+          "type": "array",
+          "description": "Specify DNS(UDP) nameserver list"
+        }
+      ]
     },
     "order:create": {
       "settings": {
@@ -118,13 +199,14 @@
       },
       "commandPath": "./commands/OrderCreate",
       "commandName": "order:create",
-      "description": "create certification order",
+      "description": "Create certification order",
       "args": [
         {
           "type": "spread",
           "propertyName": "domains",
           "name": "domains",
-          "required": true
+          "required": true,
+          "description": "domains, e.g. --domains *.example.com www.example.com"
         }
       ],
       "aliases": [],
@@ -148,6 +230,63 @@
           "description": "options: staging | production"
         }
       ]
+    },
+    "order:finish": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/OrderFinish",
+      "commandName": "order:finish",
+      "description": "Finish the verification and download cert",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": true
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "yes",
+          "propertyName": "yes",
+          "type": "boolean",
+          "alias": "y",
+          "description": "confirm the challenge has done"
+        }
+      ]
+    },
+    "order:list": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/OrderList",
+      "commandName": "order:list",
+      "description": "List orders",
+      "args": [],
+      "aliases": [],
+      "flags": []
     },
     "dump:rcfile": {
       "settings": {},

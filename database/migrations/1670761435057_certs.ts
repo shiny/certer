@@ -1,14 +1,13 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'cert_orders'
+  protected tableName = 'certs'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
 
       table.string('name')
-
       table.string('ca')
       table.enum("type", [
         "staging",
@@ -16,17 +15,18 @@ export default class extends BaseSchema {
       ])
       table.string('email')
       table.jsonb('domains')
-      table.string('order_url')
-      table.string('certificate_url')
-      table.enum("status", [
-        "pending",
-        "ready",
-        "processing",
-        "valid",
-        "invalid",
+      
+      table.integer('cert_order_id')
+      table.text('csr', 'mediumtext')
+
+      table.text('cert', 'mediumtext')
+      table.text('key', 'mediumtext')
+      table.enum('alg', [
+        'ECDSA',
+        'RSA'
       ])
       table.timestamp('expired_at', { useTz: true })
-      table.string('finalize_url')
+
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

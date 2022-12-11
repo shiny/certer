@@ -2,12 +2,17 @@ import { DateTime } from 'luxon'
 import {
   BaseModel,
   column,
+  computed,
   hasMany,
   HasMany,
+  hasOne,
+  HasOne,
  } from '@ioc:Adonis/Lucid/Orm'
- import Database from '@ioc:Adonis/Lucid/Database'
- import OrderChallenge from './OrderChallenge'
- import type { Account, Authorization, Order } from "handyacme"
+import Database from '@ioc:Adonis/Lucid/Database'
+import OrderChallenge from './OrderChallenge'
+import { Account, Authorization, Ca, Order } from "handyacme"
+import sleep from 'App/Helpers/Sleep'
+import Cert from './Cert'
 
 type OrderCreateOptions = {
   order: Order,
@@ -40,6 +45,9 @@ export default class CertOrder extends BaseModel {
   public orderUrl: string
 
   @column()
+  public certificateUrl: string
+
+  @column()
   public status: string
 
   @column.dateTime()
@@ -49,6 +57,9 @@ export default class CertOrder extends BaseModel {
     foreignKey: 'certOrderId',
   })
   public challenges: HasMany<typeof OrderChallenge>
+
+  @hasOne(() => Cert)
+  public cert: HasOne<typeof Cert>
   
   @column()
   public finalizeUrl: string
@@ -58,6 +69,27 @@ export default class CertOrder extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @computed()
+  public get isReady() {
+    return this.status === 'ready'
+  }
+
+  @computed()
+  public get isValid() {
+    return this.status === 'valid'
+  }
+
+  @computed()
+  public get isProcessing() {
+    return this.status === 'processing'
+  }
+
+  @computed()
+  public get isPending() {
+    return this.status === 'pending'
+  }
+
 
   public static async isExists({ ca, type, name, email }) {
     const existsOrder = await CertOrder.findExistingOne({ ca, type, name, email })
@@ -122,5 +154,43 @@ export default class CertOrder extends BaseModel {
       }))
       await certOrder.related('challenges').createMany(challenges)
     })
+  }
+
+  /**
+   * 
+   * @param acmeClient 
+   * @param seconds 
+   * @returns boolean
+   */
+  async waitForStatusReadyAndSave(acmeClient: Ca, seconds: number = 1) {
+    const order = await acmeClient.restoreOrder(this.orderUrl)
+    if (this.status !== order.status) {
+      this.status = order.status
+      await this.save()
+    }
+    if (order.isReady || order.isValid) {
+      // order.certificateUrl not empty only when status is valid
+      this.certificateUrl = order.certificateUrl
+      await this.save()
+      return true
+    }
+    if (order.isPending || order.isProcessing) {
+      if (seconds > 0) {
+        await sleep(seconds * 1000)
+      }
+      return false
+    }
+    throw new Error(`Order status is ${order.status}`)
+  }
+
+  async waitForChallengesReady(acmeClient: Ca, seconds: number = 1) {
+    const readyStates = await Promise.all(this.challenges.map(challenge => {
+      return challenge.isValidAndSave(acmeClient)
+    }))
+    const isValidAll = readyStates.every(value => value)
+    if (!isValidAll && seconds > 0) {
+      await sleep(seconds * 1000)
+    }
+    return isValidAll
   }
 }

@@ -6,6 +6,7 @@ import {
   BelongsTo
 } from '@ioc:Adonis/Lucid/Orm'
 import CertOrder from './CertOrder'
+import type { Ca } from "handyacme"
 
 export default class OrderChallenge extends BaseModel {
   @column({ isPrimary: true })
@@ -78,4 +79,40 @@ export default class OrderChallenge extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  /**
+   * 
+   * @param acmeClient 
+   * @returns true on valid, false on pending or processing
+   */
+  async isValidAndSave(acmeClient: Ca) {
+    const authorization = await acmeClient.restoreAuthorization(this.authorizationUrl)
+
+    if (this.authorizationStatus !== authorization.status) {
+      this.authorizationStatus = authorization.status
+      await this.save()
+    }
+
+    if (authorization.isValid) {
+      return true
+    } 
+    if (authorization.isPending) {
+      const challenge = await acmeClient.restoreChallenge(this.challengeUrl)
+      if (this.status !== challenge.status) {
+        this.status = challenge.status
+        await this.save()
+      }
+      if (challenge.isValid) {
+        return true
+      }
+      if (challenge.isProcessing || challenge.isPending) {
+        return false
+      }
+      if (challenge.isInvalid) {
+        throw new Error(`Challenge is invalid`)
+      }
+      throw new Error(`Unknow challenge status ${challenge.status}`)
+    }
+    throw new Error(`Authorization status is ${authorization.status}`)
+  }
 }
