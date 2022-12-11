@@ -288,6 +288,52 @@
       "aliases": [],
       "flags": []
     },
+    "order:purge": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/OrderPurge",
+      "commandName": "order:purge",
+      "description": "Purge exist orders",
+      "args": [
+        {
+          "type": "spread",
+          "propertyName": "domains",
+          "name": "domains",
+          "required": true,
+          "description": "Domain names to purge"
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "yes",
+          "propertyName": "yes",
+          "type": "boolean",
+          "alias": "y",
+          "description": "confirm the challenge has done"
+        }
+      ]
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",
