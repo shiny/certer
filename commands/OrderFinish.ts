@@ -1,9 +1,7 @@
-import { args, BaseCommand, flags } from '@adonisjs/core/build/standalone'
-import { getAuthorityName, AvailableCa, AvailableCaAlias, AvailableEnv } from "./"
-import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
-import Acme from "handyacme"
+import { args, flags } from '@adonisjs/core/build/standalone'
+import { OrderBaseCommand } from "./"
 
-export default class OrderFinish extends BaseCommand {
+export default class OrderFinish extends OrderBaseCommand {
 
   public static commandName = 'order:finish'
 
@@ -11,19 +9,6 @@ export default class OrderFinish extends BaseCommand {
 
   @args.string()
   public domain: string
-
-  @flags.string({ description: "order's account email"})
-  public email: string
-
-  @flags.string({
-    description: "options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
-  })
-  public ca: AvailableCaAlias
-
-  @flags.string({
-    description: "options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
-  })
-  public env: AvailableEnv
 
   @flags.boolean({
     alias: 'y',
@@ -38,41 +23,24 @@ export default class OrderFinish extends BaseCommand {
 
   public async run() {
     //
-    if (!this.yes) {
+    if (!this.confirmed) {
       this.exitCode = 1
-      return this.showConfirmTips()
+      return this.showConfirmTips('You need to recreate order if challenge DNS is not take effect yet')
     }
-    const { default: CertOrder } = await import('App/Models/CertOrder')
-
-    const authorityAlias = this.ca || defaultCa
-    const authorityName = getAuthorityName(authorityAlias)
-    const authorityEnv = this.env || defaultEnv
-    const email = this.email || defaultEmail
     
-    const { default: Account } = await import('App/Models/Account')
-    const user = await Account.findUnique({
-      email,
-      ca: authorityName,
-      type: authorityEnv
-    })
+    const user = await this.findAccount()
     if (!user) {
-      this.logger.error(`User not exists: ${email} in ${authorityName} ${authorityEnv} mode`)
+      this.logger.error(`User not exists: ${this.authorityEmail} in ${this.authorityName} ${this.authorityEnv} mode`)
       return
     }
 
-    const order = await CertOrder.findExistingOne({
-      ca: authorityName,
-      type: authorityEnv,
-      email,
-      name: this.domain
-    })
+    const order = await this.findOrder(this.domain)
     if (!order) {
       return this.logger.error('Order does not exists')
     }
     await order.load('challenges')
     
-
-    const acmeClient = await Acme.create(order.ca as AvailableCa, order.type as AvailableEnv)
+    const acmeClient = await this.createAcmeClient()
     await user.loadIntoAcmeClient(acmeClient)
 
     const waitSeconds = 1
@@ -116,10 +84,5 @@ export default class OrderFinish extends BaseCommand {
       }
     } while(true)
     // this.logger.info(`retry an another request`, `${retry}/${maxRetry}`)
-  }
-
-  showConfirmTips() {
-    const tips = 'You need to recreate order if challenge DNS is not take effect yet'
-    this.logger.action('finish').failed(`Use ${this.colors.red('--yes')} to continue`, tips)
   }
 }

@@ -1,6 +1,5 @@
-import { args, BaseCommand, flags } from '@adonisjs/core/build/standalone'
-import { AvailableCaAlias, AvailableEnv, getAuthorityName } from './'
-import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
+import { args, flags } from '@adonisjs/core/build/standalone'
+import { OrderBaseCommand } from './'
 import { Resolver } from 'node:dns/promises'
 
 /**
@@ -16,7 +15,7 @@ function hasTxtRecord(records:string[][], txt: string) {
   return records.some(recordArr => recordArr.includes(txt))
 }
 
-export default class DnsVerify extends BaseCommand {
+export default class DnsVerify extends OrderBaseCommand {
   public static commandName = 'dns:verify'
 
   public static description = 'Verify dns challenge'
@@ -29,38 +28,14 @@ export default class DnsVerify extends BaseCommand {
   @args.string()
   public domain: string
 
-  @flags.string({ description: "Order's account email" + (defaultEmail ? `, default ${defaultEmail}` : '')})
-  public email: string
-
-  @flags.string({
-    description: "Options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
-  })
-  public ca: AvailableCaAlias
-
-  @flags.string({
-    description: "Options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
-  })
-  public env: AvailableEnv
-
   @flags.array({
     description: "Specify DNS(UDP) nameserver list"
   })
   public nameserver: string[]
 
   public async run() {
-    const { default: CertOrder } = await import('App/Models/CertOrder')
     
-    const authorityAlias = this.ca || defaultCa
-    const authorityName = getAuthorityName(authorityAlias)
-    const authorityEnv = this.env || defaultEnv
-    const email = this.email || defaultEmail
-    
-    const order = await CertOrder.findExistingOne({
-      ca: authorityName,
-      type: authorityEnv,
-      email,
-      name: this.domain
-    })
+    const order = await this.findOrder(this.domain)
     if (!order) {
       return this.logger.action('verified').failed('Can not find existing order', this.domain)
     }

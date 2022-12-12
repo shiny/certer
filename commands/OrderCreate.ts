@@ -1,16 +1,10 @@
 import {
-  BaseCommand,
-  flags,
   args
 } from '@adonisjs/core/build/standalone'
+import { OrderBaseCommand } from "./"
 
-import acme from "handyacme"
 
-import { getAuthorityName, AvailableCaAlias, AvailableEnv } from "./"
-
-import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
-
-export default class OrderCreate extends BaseCommand {
+export default class OrderCreate extends OrderBaseCommand {
   /**
    * Command name is used to run the command
    */
@@ -26,27 +20,6 @@ export default class OrderCreate extends BaseCommand {
   })
   public domains: string[]
 
-  @flags.string({ description: "order's account email"})
-  public email: string
-
-  @flags.string({
-    description: "options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
-  })
-  public ca: AvailableCaAlias
-
-  @flags.string({
-    description: "options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
-  })
-  public env: AvailableEnv
-
-  get isDefaultEnv() {
-    return this.env === defaultEnv
-  }
-
-  get isDefaultCa() {
-    return this.ca === defaultCa
-  }
-
   public static settings = {
     loadApp: true,
     stayAlive: false,
@@ -58,37 +31,19 @@ export default class OrderCreate extends BaseCommand {
 
   public async run() {
 
-    const { default: Account } = await import('App/Models/Account')
-
-    const authorityAlias = this.ca || defaultCa
-    const authorityName = getAuthorityName(authorityAlias)
-    const authorityEnv = this.env || defaultEnv
-    const email = this.email || defaultEmail
-
-    const user = await Account.findUnique({
-      email,
-      ca: authorityName,
-      type: authorityEnv
-    })
+    const user = await this.findAccount()
     if (!user) {
       this.showCreateAccountTips()
-      this.logger.error(`User not exists: ${email} in ${authorityName} ${authorityEnv} mode`)
+      this.logger.error(`User not exists: ${this.authorityEmail} in ${this.authorityName} ${this.authorityEnv} mode`)
       return
     }
 
-    const { default: CertOrder } = await import("App/Models/CertOrder")
-    const isExists = await CertOrder.isExists({
-      ca: authorityName,
-      type: authorityEnv,
-      email: email,
-      name: this.domains[0]
-    })
-    if (isExists) {
+    if (await this.findOrder(this.domains[0])) {
       return this.logger.error('Order with same ca/env/email/name already exists, please continue the previous order')
     }
 
     this.logger.logUpdate(`[1/5] Creating ACME client...`)
-    const client = await acme.create(authorityName, authorityEnv)
+    const client = await this.createAcmeClient()
 
     this.logger.logUpdate(`[2/5] Importing account ${user.email}...`)
     await client.importAccount({
@@ -104,6 +59,7 @@ export default class OrderCreate extends BaseCommand {
     const authorizations = await order.authorizations()
 
     this.logger.logUpdate('[5/5] Saving...')
+    const { default: CertOrder } = await import("App/Models/CertOrder")
     await CertOrder.createCertOrder({
       order,
       account: client.account,

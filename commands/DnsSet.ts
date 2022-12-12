@@ -1,9 +1,8 @@
-import { args, BaseCommand, flags } from '@adonisjs/core/build/standalone'
-import { AvailableCaAlias, AvailableEnv, getAuthorityName } from './'
-import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
+import { args, flags } from '@adonisjs/core/build/standalone'
+import { OrderBaseCommand } from './'
 import Dns from 'App/Dns'
 
-export default class DnsSet extends BaseCommand {
+export default class DnsSet extends OrderBaseCommand {
 
   public static commandName = 'dns:set'
   public static description = 'Set dns record for certification orders'
@@ -19,38 +18,14 @@ export default class DnsSet extends BaseCommand {
   @args.string()
   public domain: string
 
-  @flags.string({ description: "Order's account email" + (defaultEmail ? `, default ${defaultEmail}` : '')})
-  public email: string
-
-  @flags.string({
-    description: "Options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
-  })
-  public ca: AvailableCaAlias
-
-  @flags.string({
-    description: "Options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
-  })
-  public env: AvailableEnv
-
   @flags.boolean({
     description: "Delete the added txt record on _acme-challenge.hostname"
   })
   public rm: boolean
 
   public async run() {
-    const { default: CertOrder } = await import('App/Models/CertOrder')
 
-    const authorityAlias = this.ca || defaultCa
-    const authorityName = getAuthorityName(authorityAlias)
-    const authorityEnv = this.env || defaultEnv
-    const email = this.email || defaultEmail
-    
-    const order = await CertOrder.findExistingOne({
-      ca: authorityName,
-      type: authorityEnv,
-      email,
-      name: this.domain
-    })
+    const order = await this.findOrder(this.domain)
     if (!order) {
       return this.logger.action('set').failed('Can not find existing order', this.domain)
     }
