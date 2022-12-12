@@ -1,7 +1,7 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
-import { OrderBaseCommand } from "./"
+import { base } from "./"
 
-export default class OrderFinish extends OrderBaseCommand {
+export default class OrderFinish extends base() {
 
   public static commandName = 'order:finish'
 

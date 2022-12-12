@@ -1,8 +1,8 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
-import { OrderBaseCommand } from './'
+import { base } from './'
 import Dns from 'App/Dns'
 
-export default class DnsSet extends OrderBaseCommand {
+export default class DnsSet extends base() {
 
   public static commandName = 'dns:set'
   public static description = 'Set dns record for certification orders'

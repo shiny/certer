@@ -1,24 +1,13 @@
 import {
   args
 } from '@adonisjs/core/build/standalone'
-import { OrderBaseCommand } from "./"
+import { base } from "./"
 
 
-export default class OrderCreate extends OrderBaseCommand {
-  /**
-   * Command name is used to run the command
-   */
+export default class OrderCreate extends base() {
+  
   public static commandName = 'order:create'
-
-  /**
-   * Command description is displayed in the "help" output
-   */
   public static description = 'Create certification order'
-
-  @args.spread({
-    description: 'domains, e.g. --domains *.example.com www.example.com'
-  })
-  public domains: string[]
 
   public static settings = {
     loadApp: true,
@@ -29,8 +18,13 @@ export default class OrderCreate extends OrderBaseCommand {
     this.logger.info(`Run ${this.colors.green("node ace account:create")} to create the account first`)
   }
 
-  public async run() {
+  @args.spread({
+    description: 'domains, e.g. *.example.com www.example.com',
+    required: true
+  })
+  public domains: string[]
 
+  public async run() {
     const user = await this.findAccount()
     if (!user) {
       this.showCreateAccountTips()

@@ -1,5 +1,5 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
-import { OrderBaseCommand } from './'
+import { base } from './'
 import { Resolver } from 'node:dns/promises'
 
 /**
@@ -15,7 +15,7 @@ function hasTxtRecord(records:string[][], txt: string) {
   return records.some(recordArr => recordArr.includes(txt))
 }
 
-export default class DnsVerify extends OrderBaseCommand {
+export default class DnsVerify extends base() {
   public static commandName = 'dns:verify'
 
   public static description = 'Verify dns challenge'

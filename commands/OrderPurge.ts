@@ -1,7 +1,7 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
-import { OrderBaseCommand } from "./"
+import { base } from "./"
 
-export default class OrderPurge extends OrderBaseCommand {
+export default class OrderPurge extends base() {
   
   public static commandName = 'order:purge'
   public static description = 'Purge exist orders'
@@ -12,10 +12,9 @@ export default class OrderPurge extends OrderBaseCommand {
   }
 
   @args.spread({
-    description: 'Domain names to purge'
+    description: 'domains, e.g. *.example.com www.example.com'
   })
   public domains: string[]
-
 
   @flags.boolean({
     alias: 'y',
