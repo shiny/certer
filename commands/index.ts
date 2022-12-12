@@ -1,6 +1,5 @@
 import { BaseCommand, flags, listDirectoryFiles } from '@adonisjs/core/build/standalone'
 import Application from '@ioc:Adonis/Core/Application'
-
 import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
 import Acme from "handyacme"
 /*
@@ -57,14 +56,6 @@ export function base() {
   
     @flags.string({ description: "order's account email"})
     public email: string
-  
-    get isDefaultEnv() {
-      return this.env === defaultEnv
-    }
-  
-    get isDefaultCa() {
-      return this.ca === defaultCa
-    }
   
     get authorityAlias() {
       return this.ca || defaultCa
