@@ -1,6 +1,6 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
 import { base } from './'
-import { writeFile, access, constants } from 'node:fs/promises'
+import Local from 'App/Deployments/Provider/Local'
 
 export default class CertExport extends base() {
 
@@ -52,15 +52,14 @@ export default class CertExport extends base() {
     if (!cert.cert) {
       return this.logger.action('export').failed(`Cert content is empty`, `maybe order #${cert.certOrderId} did not finished yet `)
     }
-    try {
-      await access(this.cert, constants.R_OK)
-      await access(this.key, constants.R_OK)
-      if (!this.yes) {
-        return this.showConfirmTips('Are you confirm to overwrite files?')
-      }
-    } catch (err) { }
-    
-    await writeFile(this.cert, cert.cert)
-    await writeFile(this.key, cert.key)
+    const deployConfig = {
+      certFile: this.cert,
+      keyFile: this.key,
+    }
+    const local = new Local()
+    if (await local.exists(cert, deployConfig) && !this.yes) {
+      return this.showConfirmTips('Are you confirm to overwrite files?')
+    }
+    await local.exec(cert, deployConfig)
   }
 }
