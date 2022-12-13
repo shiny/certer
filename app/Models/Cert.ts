@@ -33,6 +33,9 @@ export default class Cert extends BaseModel {
   public certOrderId:number
 
   @column()
+  public dnsCredName: string
+
+  @column()
   public csr:string
 
   @column()
@@ -68,6 +71,7 @@ export default class Cert extends BaseModel {
     cert.email = order.email
     cert.domains = order.domains
     cert.certOrderId = order.id
+    cert.dnsCredName = order.dnsCredName
     cert.csr = csr
     cert.key = privateKey
     cert.alg = "ECDSA"

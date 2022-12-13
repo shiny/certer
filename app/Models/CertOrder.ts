@@ -36,6 +36,9 @@ export default class CertOrder extends BaseModel {
   @column()
   public email: string
 
+  @column()
+  public dnsCredName: string
+
   @column({
     prepare: value => JSON.stringify(value)
   })

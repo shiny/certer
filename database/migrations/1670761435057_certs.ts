@@ -17,6 +17,7 @@ export default class extends BaseSchema {
       table.jsonb('domains')
       
       table.integer('cert_order_id')
+      table.string('dns_cred_name')
       table.text('csr', 'mediumtext')
 
       table.text('cert', 'mediumtext')
