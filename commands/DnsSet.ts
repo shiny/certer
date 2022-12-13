@@ -45,6 +45,9 @@ export default class DnsSet extends base() {
 
     await dns.chooseProvider(cred.provider)
     await dns.useCred(cred.creds)
+    
+    order.dnsCredName = cred.name
+    await order.save()
 
     for(const challenge of order.challenges) {
       const hostname = `_acme-challenge.${challenge.identifierValue}`
