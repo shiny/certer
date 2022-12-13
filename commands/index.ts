@@ -2,6 +2,7 @@ import { BaseCommand, flags, listDirectoryFiles } from '@adonisjs/core/build/sta
 import Application from '@ioc:Adonis/Core/Application'
 import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
 import Acme from "handyacme"
+
 /*
 |--------------------------------------------------------------------------
 | Exporting an array of commands
@@ -90,6 +91,21 @@ export function base() {
         email: this.authorityEmail,
         name: domainName
       })
+    }
+
+    async findCert(domainName: string) {
+      const { default: Cert } = await import('App/Models/Cert')
+      return Cert.query()
+        .where('ca', this.authorityName)
+        .where('type', this.authorityEnv)
+        .where('email', this.authorityEmail)
+        .where('name', domainName)
+        .first()
+    }
+
+    async findDnsCred(dnsCredName: string) {
+      const { default: DnsCred } = await import("App/Models/DnsCred")
+      return DnsCred.findBy('name', dnsCredName)
     }
     
     async createAcmeClient() {

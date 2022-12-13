@@ -38,14 +38,9 @@ export default class CertExport extends base() {
     if (!this.key || !this.cert) {
       return this.logger.action('export').failed(`You must specify ${this.colors.green('--key')} and ${this.colors.green('--cert')}`, 'key/cert file path')
     }
-
-    const { default: Cert } = await import('App/Models/Cert')
-    const cert = await Cert.query()
-      .where('ca', this.authorityName)
-      .where('type', this.authorityEnv)
-      .where('email', this.authorityEmail)
-      .where('name', this.domain)
-      .first()
+    
+    const cert = await this.findCert(this.domain)
+      
     if (!cert) {
       return this.logger.action('export').failed('Cert not found', `${this.authorityName} ${this.authorityEnv} mode with email ${this.authorityEmail}`)
     }
