@@ -62,8 +62,13 @@ export default class Cert extends BaseModel {
   })
   public order: HasOne<typeof CertOrder>
 
-  public static async createFromOrder(order: CertOrder) {
-    const cert = new Cert
+  public static async createOrUpdateFromOrder(order: CertOrder) {
+    const cert = await Cert.firstOrNew({
+      name: order.name,
+      ca: order.ca,
+      type: order.type,
+      email: order.email,
+    })
     const { privateKey, csr } = await createEcdsaCsr(order.domains, "pem")
     cert.name = order.name
     cert.ca = order.ca

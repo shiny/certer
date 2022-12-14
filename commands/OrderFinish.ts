@@ -64,7 +64,7 @@ export default class OrderFinish extends base() {
       }
       // finalize order when ready
       if (order.isReady) {
-        const cert = await Cert.createFromOrder(order)
+        const cert = await Cert.createOrUpdateFromOrder(order)
         const { certificate: certificateUrl } = await cert.finalize(acmeClient)
         order.certificateUrl = certificateUrl
         await order.save()
