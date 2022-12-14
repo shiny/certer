@@ -24,16 +24,31 @@ export type AvailableCaAlias = "letsencrypt" | "le" | "zerossl" | "zs" | "buypas
 export type AvailableCa = "LetsEncrypt" | "ZeroSSL" | "BuyPass"
 export type AvailableEnv = "staging" | "production"
 
-export const getAuthorityName = (alias: AvailableCaAlias): AvailableCa => {
-    const authorities: Record<AvailableCaAlias, AvailableCa> = {
-        letsencrypt: "LetsEncrypt",
-        le: "LetsEncrypt",
-        zerossl: "ZeroSSL",
-        zs: "ZeroSSL",
-        buypass: "BuyPass",
-        bp: "BuyPass"
-      }
-      return authorities[alias]
+export function isCaAlias(str: string): str is AvailableCaAlias {
+  return [
+    "letsencrypt", "le", "zerossl", "zs", "buypass", "bp"
+  ].includes(str)
+}
+
+export function isCa(str: string): str is AvailableCa {
+  return [
+    "LetsEncrypt", "ZeroSSL", "BuyPass"
+  ].includes(str)
+}
+
+export const getAuthorityName = (alias: AvailableCaAlias | AvailableCa): AvailableCa => {
+  if (isCa(alias)) {
+    return alias
+  }
+  const authorities: Record<AvailableCaAlias, AvailableCa> = {
+    letsencrypt: "LetsEncrypt",
+    le: "LetsEncrypt",
+    zerossl: "ZeroSSL",
+    zs: "ZeroSSL",
+    buypass: "BuyPass",
+    bp: "BuyPass"
+  }
+  return authorities[alias]
 }
 /**
  * Note
@@ -48,7 +63,7 @@ export function base() {
     @flags.string({
       description: "options: letsencrypt | le | zerossl | zs | buypass | bp" + (defaultCa ? `, default ${defaultCa}` : '')
     })
-    public ca: AvailableCaAlias
+    public ca: AvailableCaAlias | AvailableCa
   
     @flags.string({
       description: "options: staging | production" + (defaultEnv ? `, default ${defaultEnv}` : ''),
