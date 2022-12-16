@@ -1,4 +1,4 @@
-# xerts
+# certer
 
 ### Prepare the environment
 .env file
