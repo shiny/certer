@@ -5,7 +5,7 @@ import { base } from "./"
 export default class CertRenew extends base() {
 
   public static commandName = 'cert:renew'
-  public static description = 'Renew cert'
+  public static description = 'Renew certificate'
   
   @args.string()
   public domain: string
