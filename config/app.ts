@@ -278,3 +278,5 @@ export const assets: AssetsManagerConfig = {
 export const defaultCa: string = Env.get('DEFAULT_CA')
 export const defaultEmail= Env.get('DEFAULT_EMAIL')
 export const defaultEnv = Env.get('DEFAULT_ENV')
+export const httpProxy = Env.get('http_proxy')
+export const proxyAllowList = Env.get('PROXY_ALLOW_LIST')

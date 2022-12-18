@@ -34,4 +34,6 @@ export default Env.rules({
   DEFAULT_CA: Env.schema.string(),
   DEFAULT_ENV: Env.schema.enum(['staging', 'production'] as const),
   DEFAULT_EMAIL: Env.schema.string({ format: 'email' }),
+  http_proxy: Env.schema.string(),
+  PROXY_ALLOW_LIST: Env.schema.string()
 })

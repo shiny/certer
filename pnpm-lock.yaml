@@ -23,6 +23,7 @@ specifiers:
   eslint-plugin-adonis: ^2.1.1
   eslint-plugin-prettier: ^4.2.1
   handyacme: ^0.1.1
+  https-proxy-agent: ^5.0.1
   luxon: ^3.1.1
   node-fetch: '2'
   pg: ^8.8.0
@@ -47,6 +48,7 @@ dependencies:
   '@adonisjs/view': 6.2.0_@adonisjs+core@5.9.0
   '@ltd/j-toml': 1.35.3
   handyacme: 0.1.1
+  https-proxy-agent: 5.0.1
   luxon: 3.1.1
   node-fetch: 2.6.7
   pg: 8.8.0
@@ -2929,6 +2931,15 @@ packages:
     resolution: {integrity: sha512-cQH/NP250gOF9k3TTDhVsTOPSAvyH4MhKVZ4ryYiihA+vnP27sut1gVIrRas3Evl5d2wEgWVGI5DgdP/ZFSk0w==}
     dev: true
 
+  /agent-base/6.0.2:
+    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
+    engines: {node: '>= 6.0.0'}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /aggregate-error/3.1.0:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
@@ -5339,6 +5350,16 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: true
+
+  /https-proxy-agent/5.0.1:
+    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
+    engines: {node: '>= 6'}
+    dependencies:
+      agent-base: 6.0.2
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /human-signals/2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
