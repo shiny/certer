@@ -11,7 +11,7 @@ type ParseResult = {
     isIcann: boolean | null
     isPrivate: boolean | null
 }
-export const supporttedDnsProviders = ["aliyun"] as const
+export const supporttedDnsProviders = [ "aliyun", "cloudflare" ] as const
 export type AvailableDnsProvider = typeof supporttedDnsProviders[number]
 export type RecordOption = {
     domain: string,
