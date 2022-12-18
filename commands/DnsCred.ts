@@ -48,7 +48,7 @@ export default class DnsCred extends BaseCommand {
    */
   public showTips() {
     const dns = this.application.container.use('Dns')
-    const supporttedProviders = dns.supporttedProviders.join('|')
+    const supporttedProviders = dns.supporttedProviders.join(' | ')
     const tips = `${this.colors.green('--provider')} is required, supportted providers are: ${supporttedProviders}`
     this.logger.info(tips)
   }
