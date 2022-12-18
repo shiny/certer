@@ -1,5 +1,6 @@
 import { BaseCommand, flags, listDirectoryFiles } from '@adonisjs/core/build/standalone'
 import Application from '@ioc:Adonis/Core/Application'
+import { createProxyAgent, shouldProxy } from 'App/Helpers/Proxy'
 import { defaultCa, defaultEmail, defaultEnv } from 'Config/app'
 import Acme from "handyacme"
 
@@ -124,7 +125,17 @@ export function base() {
     }
     
     async createAcmeClient() {
-      const client = await Acme.create(this.authorityName, this.authorityEnv)
+      const client = await Acme.create(this.authorityName, "none")
+
+      if (shouldProxy(client.productionDirectoryUrl)) {
+        client.request.agent = createProxyAgent()
+      }
+      if (this.authorityEnv === "staging") {
+        await client.setStaging()
+      } else if (this.authorityEnv === "production") {
+        await client.setProduction()
+      }
+            
       const user = await this.findAccount()
       if (user) {
         await client.importAccount({
