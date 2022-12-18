@@ -62,7 +62,7 @@ export default class DnsSet extends base() {
       // or set
       } else {
         if (isExist) {
-          return this.logger.action('set').skipped(`${this.colors.green(hostname)} already exists`)
+          this.logger.action('set').skipped(`${this.colors.green(hostname)} already exists`)
         } else {
           await dns.setTxtRecord(hostname, challenge.signKey)
           this.logger.action('set').succeeded(hostname)
