@@ -43,7 +43,6 @@ export default class CertRenew extends base() {
       '--env', cert.type,
       '--email', cert.email
     ]
-    console.log(orderParams)
     await this.kernel.exec('order:create', this.buildParams(
       cert.domains, orderParams
     ))
