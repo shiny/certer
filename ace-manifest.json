@@ -12,21 +12,22 @@
       "aliases": [],
       "flags": [
         {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string"
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
         },
         {
           "name": "env",
           "propertyName": "env",
           "type": "string",
-          "description": "default environment production. options: staging | production"
+          "description": "options: staging | production"
         },
         {
-          "name": "ca",
-          "propertyName": "ca",
+          "name": "email",
+          "propertyName": "email",
           "type": "string",
-          "description": "default letsencrypt, options: letsencrypt | le | zerossl | zs | buypass | bp"
+          "description": "order's account email"
         }
       ]
     },
@@ -61,6 +62,284 @@
       "args": [],
       "aliases": [],
       "flags": []
+    },
+    "cert:apply": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CertApply",
+      "commandName": "cert:apply",
+      "description": "",
+      "args": [],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "sleep",
+          "propertyName": "sleep",
+          "type": "number"
+        },
+        {
+          "name": "file",
+          "propertyName": "file",
+          "type": "string",
+          "description": "TOML config file",
+          "alias": "f"
+        }
+      ]
+    },
+    "cert:deploy": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CertDeploy",
+      "commandName": "cert:deploy",
+      "description": "Deploy certificate",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domainOrId",
+          "name": "domainOrId",
+          "required": false,
+          "description": "domain name or id of a deployment"
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "all",
+          "propertyName": "all",
+          "type": "boolean"
+        }
+      ]
+    },
+    "cert:deploy-local": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CertDeployLocal",
+      "commandName": "cert:deploy-local",
+      "description": "Export certificate / key to local file",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": true,
+          "description": "Domain Name"
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "key",
+          "propertyName": "key",
+          "type": "string",
+          "description": "Key file"
+        },
+        {
+          "name": "cert",
+          "propertyName": "cert",
+          "type": "string",
+          "description": "Cert file"
+        },
+        {
+          "name": "yes",
+          "propertyName": "yes",
+          "type": "boolean",
+          "description": "Overwrite file?",
+          "alias": "y"
+        }
+      ]
+    },
+    "cert:deploy-ssh": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CertDeploySsh",
+      "commandName": "cert:deploy-ssh",
+      "description": "Deploy cert to remote ssh host",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": false,
+          "description": "certificate domain name"
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "host",
+          "propertyName": "host",
+          "type": "string",
+          "description": "ssh host to deploy",
+          "alias": "H"
+        },
+        {
+          "name": "port",
+          "propertyName": "port",
+          "type": "number",
+          "description": "ssh port, default 22",
+          "alias": "P"
+        },
+        {
+          "name": "user",
+          "propertyName": "user",
+          "type": "string",
+          "description": "ssh user, default root",
+          "alias": "u"
+        },
+        {
+          "name": "ssh-private-key",
+          "propertyName": "sshPrivateKey",
+          "type": "string",
+          "description": "ssh key file"
+        },
+        {
+          "name": "key-file",
+          "propertyName": "keyFile",
+          "type": "string",
+          "description": "remote ssh location to deploy certificate key file"
+        },
+        {
+          "name": "cert-file",
+          "propertyName": "certFile",
+          "type": "string",
+          "description": "remote ssh location to deploy certificate cert file"
+        },
+        {
+          "name": "reload-command",
+          "propertyName": "reloadCommand",
+          "type": "string",
+          "description": "ssh reload command to reload cerificate"
+        },
+        {
+          "name": "save",
+          "propertyName": "save",
+          "type": "boolean",
+          "description": "save the deployment to database"
+        }
+      ]
+    },
+    "cert:renew": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CertRenew",
+      "commandName": "cert:renew",
+      "description": "Renew certificate",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "domain",
+          "name": "domain",
+          "required": true
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "ca",
+          "propertyName": "ca",
+          "type": "string",
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
+        },
+        {
+          "name": "env",
+          "propertyName": "env",
+          "type": "string",
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "sleep",
+          "propertyName": "sleep",
+          "type": "number"
+        }
+      ]
     },
     "dns:cred": {
       "settings": {
@@ -118,27 +397,27 @@
       "aliases": [],
       "flags": [
         {
-          "name": "cred",
-          "propertyName": "cred",
-          "type": "string"
-        },
-        {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string",
-          "description": "Order's account email"
-        },
-        {
           "name": "ca",
           "propertyName": "ca",
           "type": "string",
-          "description": "Options: letsencrypt | le | zerossl | zs | buypass | bp"
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
         },
         {
           "name": "env",
           "propertyName": "env",
           "type": "string",
-          "description": "Options: staging | production"
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
+        },
+        {
+          "name": "cred",
+          "propertyName": "cred",
+          "type": "string"
         },
         {
           "name": "rm",
@@ -167,22 +446,22 @@
       "aliases": [],
       "flags": [
         {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string",
-          "description": "Order's account email"
-        },
-        {
           "name": "ca",
           "propertyName": "ca",
           "type": "string",
-          "description": "Options: letsencrypt | le | zerossl | zs | buypass | bp"
+          "description": "options: letsencrypt | le | zerossl | zs | buypass | bp"
         },
         {
           "name": "env",
           "propertyName": "env",
           "type": "string",
-          "description": "Options: staging | production"
+          "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
         },
         {
           "name": "nameserver",
@@ -206,17 +485,11 @@
           "propertyName": "domains",
           "name": "domains",
           "required": true,
-          "description": "domains, e.g. --domains *.example.com www.example.com"
+          "description": "domains, e.g. *.example.com www.example.com"
         }
       ],
       "aliases": [],
       "flags": [
-        {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string",
-          "description": "order's account email"
-        },
         {
           "name": "ca",
           "propertyName": "ca",
@@ -228,6 +501,12 @@
           "propertyName": "env",
           "type": "string",
           "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
         }
       ]
     },
@@ -250,12 +529,6 @@
       "aliases": [],
       "flags": [
         {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string",
-          "description": "order's account email"
-        },
-        {
           "name": "ca",
           "propertyName": "ca",
           "type": "string",
@@ -266,6 +539,12 @@
           "propertyName": "env",
           "type": "string",
           "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
         },
         {
           "name": "yes",
@@ -302,17 +581,11 @@
           "propertyName": "domains",
           "name": "domains",
           "required": true,
-          "description": "Domain names to purge"
+          "description": "domains, e.g. *.example.com www.example.com"
         }
       ],
       "aliases": [],
       "flags": [
-        {
-          "name": "email",
-          "propertyName": "email",
-          "type": "string",
-          "description": "order's account email"
-        },
         {
           "name": "ca",
           "propertyName": "ca",
@@ -324,6 +597,12 @@
           "propertyName": "env",
           "type": "string",
           "description": "options: staging | production"
+        },
+        {
+          "name": "email",
+          "propertyName": "email",
+          "type": "string",
+          "description": "order's account email"
         },
         {
           "name": "yes",
