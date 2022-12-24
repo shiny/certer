@@ -41,6 +41,10 @@ class Ssh {
     exitCode: number | null
 
     async exec(cert, config: Config) {
+        
+        config.port = config.port ?? 22
+        config.user = config.user ?? 'root'
+
         const sftp = await this.createSftpInstance(config)
         try {
             const puts = [
