@@ -1,11 +1,11 @@
 import { args, flags } from '@adonisjs/core/build/standalone'
-import { base } from './'
+import { base } from '.'
 import Local from 'App/Deployments/Provider/Local'
 
-export default class CertExport extends base() {
+export default class CertDeployLocal extends base() {
 
-  public static commandName = 'cert:export'
-  public static description = 'Export certificate / key to files'
+  public static commandName = 'cert:deploy-local'
+  public static description = 'Export certificate / key to local file'
 
   public static settings = {
     loadApp: true,
