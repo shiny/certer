@@ -1,4 +1,8 @@
-# certer
+# xerts
+
+Acme SSL certificate automatic tool.
+
+`git clone https://github.com/shiny/xerts.git`
 
 ### Prepare the environment
 .env file
@@ -10,15 +14,37 @@ DEFAULT_CA=letsencrypt
 DEFAULT_ENV=production
 # Default account's email
 DEFAULT_EMAIL=[your email here]
+# or pg if PG_* is set
+DB_CONNECTION=sqlite
 ```
 
-1. `ace account:create`
-2. `ace cred:set --provider aliyun`
+### Install
 
-### Issue a new certificate
+```bash
+cd xerts
+node ace migration:run
+node ace cred:set --provider cloudflare
+```
 
-1. `ace order:create example.com *.example.com`
-2. `ace dns:set example.com`
-3. `ace order:finish example.com --yes`
-4. `ace dns:set example.com --rm`
-5. `ace order:purge example.com --yes`
+### Apply a certificate
+
+example.toml
+
+```toml
+[order]
+domain = [ "example.com", "*.example.com" ]
+dnsCred = "[dns cred name]"
+ca = "letsencrypt"
+
+[deploy]
+type = "ssh"
+host = "example.com"
+reloadCommand = "docker compose -f /data/blog/docker-compose.yml restart nginx"
+keyFile = "/data/blog/config/ssl.key"
+certFile = "/data/blog/config/ssl.crt"
+sshPrivateKey = "/root/.ssh/id_ed25519"
+```
+
+### Apply cert config file by
+
+`node ace cert:apply -f example.toml`
