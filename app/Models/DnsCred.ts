@@ -14,8 +14,11 @@ export default class DnsCred extends BaseModel {
   @column()
   public provider: string
 
-  @column()
-  public creds: string
+  @column({
+    prepare: value => JSON.stringify(value),
+    consume: value => JSON.parse(value)
+  })
+  public creds: any
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime

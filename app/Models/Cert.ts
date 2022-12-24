@@ -25,7 +25,8 @@ export default class Cert extends BaseModel {
   public email: string
 
   @column({
-    prepare: value => JSON.stringify(value)
+    prepare: value => JSON.stringify(value),
+    consume: value => JSON.parse(value)
   })
   public domains: string[]
   

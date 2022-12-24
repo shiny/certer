@@ -40,7 +40,8 @@ export default class CertOrder extends BaseModel {
   public dnsCredName: string
 
   @column({
-    prepare: value => JSON.stringify(value)
+    prepare: value => JSON.stringify(value),
+    consume: value => JSON.parse(value)
   })
   public domains: string[]
 
