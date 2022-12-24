@@ -51,7 +51,7 @@ export default class CertRenew extends base() {
       orderParams
     ))
     this.logger.info(`wait for ${this.sleep} seconds`)
-    await sleep(this.sleep)
+    await sleep(this.sleep * 1000)
     await this.kernel.exec('order:finish', this.buildParams(
       cert.name,
       orderParams,
@@ -66,6 +66,10 @@ export default class CertRenew extends base() {
       cert.name,
       orderParams,
       '--yes'
+    ))
+    await this.kernel.exec('cert:deploy', this.buildParams(
+      cert.name,
+      orderParams,
     ))
   }
 
