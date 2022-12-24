@@ -45,16 +45,16 @@ class Cloudflare extends BaseProvider {
         if (result.length === 0) {
             return []
         }
-        return [
-            {
-                domain: result[0].zone_name,
+        return result.map(item => {
+            return {
+                domain: item.zone_name,
                 subdomain: record.subdomain,
-                value: result[0].content,
-                type: result[0].type,
-                rawId: `${result[0].zone_id}:${result[0].id}`,
-                TTL: result[0].ttl
+                value: item.content,
+                type: item.type,
+                rawId: `${item.zone_id}:${item.id}`,
+                TTL: item.ttl
             } as RecordOption
-        ]
+        })
     }
 
     public async deleteById(rawId: `${string}:${string}`) {
