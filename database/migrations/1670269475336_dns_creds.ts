@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       
       table.string('name').unique()
       table.string('provider')
-      table.jsonb('creds')
+      table.string('creds')
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

@@ -14,7 +14,7 @@ export default class extends BaseSchema {
         "production"
       ])
       table.string('email')
-      table.jsonb('domains')
+      table.string('domains')
       
       table.integer('cert_order_id')
       table.string('dns_cred_name')

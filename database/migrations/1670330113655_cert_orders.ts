@@ -16,7 +16,7 @@ export default class extends BaseSchema {
       ])
       table.string('dns_cred_name')
       table.string('email')
-      table.jsonb('domains')
+      table.string('domains')
       table.string('order_url')
       table.string('certificate_url')
       table.enum("status", [
